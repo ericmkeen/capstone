@@ -1,4 +1,4 @@
-platform,sp,date,X,Y,size,bhv,type,time,mode,year,inkfs,valid
+platform,sp,date,longitude,latitude,size,bhv,type,time,mode,year,inkfs,valid
 Bangarang,FW,2013-06-28,-129.28421,53.05208,1,NA,NA,10:51:00 ,boat,2013,TRUE,TRUE
 Bangarang,FW,2013-06-28,-129.2409,53.00834,1,NA,NA,13:50:00 ,boat,2013,TRUE,TRUE
 Bangarang,FW,2013-06-28,-129.27152,53.00915,1,NA,NA,14:30:00 ,boat,2013,TRUE,TRUE
