@@ -60,6 +60,9 @@ ggplot(dfs, aes(x=year, y=co2, color=entity)) +
 # Which countries have reduced their emissions since the yaer 2000
 
 
+# Which countries have reduce their emissions the most (proportionally) from their peak emissions year?
+
+
 # Show a plot of US emissions as a share of worldwide emissions
 
 
@@ -69,7 +72,19 @@ ggplot(dfs, aes(x=year, y=co2, color=entity)) +
 # Which continent was producing the most in 1990?
 
 
-# Percent reduction in emissions, 2020 vs 2019
+# Global reduction in emissions in 2020 vs 2019?
 
 
+# Which countries had the greatest percent reduction in emissions, 2020 vs 2019?
 
+
+#
+mr <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2_sectors.csv')
+mr %>% head
+?expand
+mrs <- data.table::melt(mr, id.vars=c('Entity', 'Code', 'Year'), variable.name=c('Sector'))
+head(mrs)
+names(mrs) <- names(mrs) %>% tolower
+head(mrs)
+#write.csv(mrs, file='co2_sectors.csv', quote=FALSE, row.names=FALSE)
+getwd()
