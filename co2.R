@@ -78,13 +78,38 @@ ggplot(dfs, aes(x=year, y=co2, color=entity)) +
 # Which countries had the greatest percent reduction in emissions, 2020 vs 2019?
 
 
-#
+# Emissions by sector
 mr <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2_sectors.csv')
 mr %>% head
-?expand
-mrs <- data.table::melt(mr, id.vars=c('Entity', 'Code', 'Year'), variable.name=c('Sector'))
-head(mrs)
-names(mrs) <- names(mrs) %>% tolower
-head(mrs)
-#write.csv(mrs, file='co2_sectors.csv', quote=FALSE, row.names=FALSE)
-getwd()
+mr <- mr %>% rename(co2 = value)
+mr <- mr %>% filter(sector != 'Land-use change and forestry')
+mr$sector %>% unique
+mr$sector[mr$sector == 'Industry'] <- 'Manufacturing and construction'
+mr$sector[mr$sector == 'Fugitive emissions'] <- 'Other'
+mr$sector[mr$sector == 'Waste'] <- 'Other'
+mr$sector[mr$sector == 'Buildings'] <- 'Other'
+mr$sector[mr$sector == 'Other fuel combustion'] <- 'Other'
+mr$sector[mr$sector == 'Aviation and shipping'] <- 'Transport'
+head(mr)
+mr <- mr %>% group_by(entity, year, sector) %>% summarize(co2 = sum(co2))
+head(mr)
+
+mrs <- mr %>% filter(entity == 'China')
+mrs <- mr %>% filter(entity == 'United States')
+mrs <- mr %>% filter(entity == 'Switzerland')
+
+ggplot(mrs, aes(x=year, y=co2, color=sector)) +
+  geom_line()
+
+#write.csv(mr, file='co2_sectors.csv', quote=FALSE, row.names=FALSE)
+mr$year %>% max
+
+(mr %>% filter(co2 < 0))$sector %>% unique
+
+mrs <- mr %>%
+  filter(sector == 'Agriculture') %>%
+  filter(entity %in% c('China', 'United States', 'India', 'Russia', 'Japan'))
+
+ggplot(mrs, aes(x=year, y=co2, color=entity)) +
+  geom_line()
+
