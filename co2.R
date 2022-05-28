@@ -81,6 +81,7 @@ ggplot(dfs, aes(x=year, y=co2, color=entity)) +
 # Emissions by sector
 mr <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2_sectors.csv')
 mr %>% head
+
 mr <- mr %>% rename(co2 = value)
 mr <- mr %>% filter(sector != 'Land-use change and forestry')
 mr$sector %>% unique
