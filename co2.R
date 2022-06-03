@@ -5,39 +5,66 @@
 library(dplyr)
 library(ggplot2)
 library(readr)
-df <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2.csv')
+
+################################################################################
+################################################################################
+# emissions by 'county'
+
+ghg <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2.csv')
 
 # explore
-head(df)
+head(ghg)
 
 # fix names to lower case
-(names(df) <- names(df) %>% tolower)
+(names(ghg) <- names(ghg) %>% tolower)
 
 # simplify co2 name
-df <- df %>% rename(c02 = `Annual co2 emissions (zero filled)`)
+ghg <- ghg %>% rename(co2 = `annual co2 emissions (zero filled)`)
 
-head(df)
+head(ghg)
 
 # Look at "entity"
-df$entity %>% unique
+ghg$entity %>% unique
 
 # Produce a line plot of total worldwide c02 emissions over time
-dfs <- df %>% filter(entity == 'World')
-dfs$year
+ghgi <- ghg %>% filter(entity == 'World')
+ghgi$year
 
-ggplot(dfs, aes(x=year, y=co2)) +
+ggplot(ghgi, aes(x=year, y=co2)) +
   geom_line()
 
 # Now use geom_area
-ggplot(dfs, aes(x=year, y=co2)) +
-  geom_area()
+ggplot(ghgi, aes(x=year, y=co2)) +
+  geom_area(alpha = 0.5)
+
+
+################################################################################
+################################################################################
+# emissions by 'county-sector'
+
+# Emissions by sector
+sectors <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2_sectors.csv')
+sectors %>% head
+
+# Show emissions by sector for China over time
+sectors <- sectors %>% filter(entity == 'China')
+ggplot(mrs, aes(x=year, y=co2, color=sector)) +
+  geom_point() 
+
+ggplot()
+
+
+################################################################################
+################################################################################
+# scraps
+
 
 # Show share of emissions from each continent
 continents <- c('North America', 'South America', 'Europe', 'Africa', 'Asia')
-dfs <- df %>% filter(entity %in% continents)
-dfs$entity %>% unique
+ghgi <- ghg %>% filter(entity %in% continents)
+ghgi$entity %>% unique
 
-ggplot(dfs, aes(x=year, y=co2, fill=entity)) +
+ggplot(ghgi, aes(x=year, y=co2, fill=entity)) +
   geom_area()
 
 # Show CO2 emissions for the US alone, using a line plot (not area plot).
@@ -57,7 +84,7 @@ ggplot(dfs, aes(x=year, y=co2, color=entity)) +
   geom_line()
 
 
-# Which countries have reduced their emissions since the yaer 2000
+# Which countries have reduced their emissions since the year 2000
 
 
 # Which countries have reduce their emissions the most (proportionally) from their peak emissions year?
@@ -78,39 +105,36 @@ ggplot(dfs, aes(x=year, y=co2, color=entity)) +
 # Which countries had the greatest percent reduction in emissions, 2020 vs 2019?
 
 
-# Emissions by sector
-mr <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2_sectors.csv')
-mr %>% head
 
-mr <- mr %>% rename(co2 = value)
-mr <- mr %>% filter(sector != 'Land-use change and forestry')
-mr$sector %>% unique
-mr$sector[mr$sector == 'Industry'] <- 'Manufacturing and construction'
-mr$sector[mr$sector == 'Fugitive emissions'] <- 'Other'
-mr$sector[mr$sector == 'Waste'] <- 'Other'
-mr$sector[mr$sector == 'Buildings'] <- 'Other'
-mr$sector[mr$sector == 'Other fuel combustion'] <- 'Other'
-mr$sector[mr$sector == 'Aviation and shipping'] <- 'Transport'
-head(mr)
-mr <- mr %>% group_by(entity, year, sector) %>% summarize(co2 = sum(co2))
-head(mr)
+# In a multi-pane plot, show the emissions by sector over time for the top 6 most carbon-polluting countries
 
-mrs <- mr %>% filter(entity == 'China')
-mrs <- mr %>% filter(entity == 'United States')
-mrs <- mr %>% filter(entity == 'Switzerland')
+# A bar chart showing total emissions in each sector for 2018
+mrs <-
+  mr %>%
+  filter(year == 2018) %>%
+  group_by(sector) %>%
+  summarize(total = sum(co2, na.rm=TRUE))
+mrs
 
-ggplot(mrs, aes(x=year, y=co2, color=sector)) +
-  geom_line()
+# Convert this to share of total emissions, such that the bars add up to 1
+mrs$share <- round(mrs$total / sum(mrs$total), 2)
+mrs
+ggplot(mrs, aes(x=sector, y=share)) + geom_col()
 
-#write.csv(mr, file='co2_sectors.csv', quote=FALSE, row.names=FALSE)
-mr$year %>% max
+# Show the annual trend in the share of Chinese emissions contributed by electricity and heating
 
-(mr %>% filter(co2 < 0))$sector %>% unique
+# Show this for each continent plus Oceania
 
-mrs <- mr %>%
-  filter(sector == 'Agriculture') %>%
-  filter(entity %in% c('China', 'United States', 'India', 'Russia', 'Japan'))
+# Show trends in emissions from each sector worldwide over time
 
-ggplot(mrs, aes(x=year, y=co2, color=entity)) +
-  geom_line()
+# Which countries have decreased their electricity/heating emissions from 2000?
+
+# Rank countries by their electricity/heating emissions in 2018 relative to 2000.
+# Create a plot with rank on the x axis and 'dela emissions' on the y
+# Add a horizontal line at y = 0
+
+
+
+
+
 
