@@ -10,6 +10,9 @@ library(readr)
 ################################################################################
 # emissions by 'county'
 
+library(readr)
+
+# Emissions by country-year, 1750 - 2020
 ghg <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2.csv')
 
 # explore
@@ -42,16 +45,25 @@ ggplot(ghgi, aes(x=year, y=co2)) +
 ################################################################################
 # emissions by 'county-sector'
 
-# Emissions by sector
+library(readr)
+
+# Emissions by country-year, 1750 - 2020
+ghg <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2.csv')
+
+# Emissions by country-year-sector, 1990 - 2018
 sectors <- read_csv('https://raw.githubusercontent.com/ericmkeen/capstone/master/co2_sectors.csv')
 sectors %>% head
 
-# Show emissions by sector for China over time
-sectors <- sectors %>% filter(entity == 'China')
-ggplot(mrs, aes(x=year, y=co2, color=sector)) +
-  geom_point() 
+sectors$entity %>% unique
 
-ggplot()
+ghg <- sectors %>% 
+  group_by(entity, year) %>% 
+  summarize(co2 = sum(co2)) %>% 
+  filter(entity %in% c('China','United States','India','Japan','Russia'))
+
+ggplot(ghg, aes(x=year, y=co2, color=entity)) +
+  geom_line() 
+
 
 
 ################################################################################
